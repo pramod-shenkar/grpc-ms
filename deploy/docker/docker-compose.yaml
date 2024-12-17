@@ -1,0 +1,53 @@
+services:
+
+  order-db:
+    image: mysql:latest
+    hostname: "order-db"
+    container_name: "order-db"
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: order
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - '3306:3306'
+    networks:
+      - grpc-ms-network
+
+  payment-db:
+    image: mysql:latest
+    hostname: "payment-db"
+    container_name: "payment-db"
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: order
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - '3307:3306'
+    networks:
+      - grpc-ms-network
+
+  order-app:
+    image: order-service
+    hostname: order-service
+    container_name: "order-service"
+    ports:
+      - 3000:3000
+    depends_on:
+      - order-db
+    environment:
+      - AppPort=3000
+      - DaraSourceUrl=user:password@tcp(order-db:3306)/order
+      - Env=dev
+      - PaymentServiceUrl=payment-app:3001
+    networks:
+      - grpc-ms-network
+
+networks:
+  grpc-ms-network:
+    name: grpc-ms-network
+    driver: bridge
+
