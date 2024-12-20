@@ -1,20 +1,23 @@
 package main
 
 import (
+	"encoding/json"
 	"grpc-ms/services/order/config"
 	"grpc-ms/services/order/internal/adapter/db"
 	"grpc-ms/services/order/internal/adapter/payment"
 	"grpc-ms/services/order/internal/application/core/api"
-	"log/slog"
+	"log"
 
 	"grpc-ms/services/order/internal/adapter/grpc"
 )
 
 func init() {
-	slog.Info(config.GetDataSourceUrl())
-	slog.Info(config.GetAppPort())
-	slog.Info(string(config.GetEnv()))
-	slog.Info(config.GetPaymentServiceUrl())
+
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
+	log.SetFlags(log.Flags() &^ (log.Ldate | log.Ltime))
+
+	configBytes, _ := json.MarshalIndent(config.Env, "", " ")
+	log.Printf("%v", string(configBytes))
 }
 
 func main() {
@@ -25,15 +28,15 @@ func main() {
 		}
 	}()
 
-	dbAdapter, err := db.NewAdapter(config.GetDataSourceUrl())
+	dbAdapter, err := db.NewAdapter()
 	if err != nil {
-		slog.Error(err.Error())
+		log.Println(err.Error())
 		return
 	}
 
-	paymentAdapter, err := payment.NewAdapter(config.GetPaymentServiceUrl())
+	paymentAdapter, err := payment.NewAdapter(config.Env.PaymentServiceUrl)
 	if err != nil {
-		slog.Error(err.Error())
+		log.Println(err.Error())
 		return
 	}
 

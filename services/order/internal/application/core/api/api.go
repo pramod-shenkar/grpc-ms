@@ -3,7 +3,7 @@ package api
 import (
 	"grpc-ms/services/order/internal/application/core/domain"
 	"grpc-ms/services/order/internal/ports"
-	"log/slog"
+	"log"
 	"strings"
 
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
@@ -26,13 +26,13 @@ func NewApplication(db ports.DBPort, payment ports.PaymentPort) *Application {
 func (a Application) PlaceOrder(order domain.Order) (domain.Order, error) {
 	err := a.db.Save(&order)
 	if err != nil {
-		slog.Error(err.Error())
+		log.Println(err.Error())
 		return domain.Order{}, err
 	}
 
 	err = a.payment.Charge(&order)
 	if err != nil {
-		slog.Error(err.Error())
+		log.Println(err.Error())
 
 		/*
 			status.Errorf(

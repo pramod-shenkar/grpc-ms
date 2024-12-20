@@ -5,7 +5,7 @@ import (
 	"grpc-ms/proto/payment"
 	"grpc-ms/services/order/internal/application/core/domain"
 	"grpc-ms/services/order/internal/ports"
-	"log/slog"
+	"log"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -24,7 +24,7 @@ func NewAdapter(paymentServiceUrl string) (*Adapter, error) {
 
 	conn, err := grpc.NewClient(paymentServiceUrl, opts...)
 	if err != nil {
-		slog.Error(err.Error())
+		log.Println(err.Error())
 		return nil, err
 	}
 
@@ -46,7 +46,7 @@ func (a *Adapter) Charge(order *domain.Order) error {
 	)
 
 	if err != nil {
-		slog.Error(err.Error())
+		log.Println(err.Error())
 		return err
 	}
 

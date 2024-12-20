@@ -4,7 +4,7 @@ import (
 	"context"
 	"grpc-ms/services/payment/internal/application/core/domain"
 	"grpc-ms/services/payment/internal/ports"
-	"log/slog"
+	"log"
 )
 
 type Application struct {
@@ -22,7 +22,7 @@ var _ ports.APIPort = new(Application)
 func (a Application) Charge(ctx context.Context, payment *domain.Payment) (int64, error) {
 	err := a.db.Save(payment)
 	if err != nil {
-		slog.Error(err.Error())
+		log.Println(err.Error())
 		return -1, err
 	}
 	return payment.ID, nil

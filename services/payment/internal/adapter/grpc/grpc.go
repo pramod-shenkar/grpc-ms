@@ -6,7 +6,7 @@ import (
 	"grpc-ms/services/payment/config"
 	"grpc-ms/services/payment/internal/application/core/domain"
 	"grpc-ms/services/payment/internal/ports"
-	"log/slog"
+	"log"
 	"net"
 
 	"google.golang.org/grpc"
@@ -30,7 +30,7 @@ func (a Adapter) Run() error {
 
 	listener, err := net.Listen("tcp", config.AppPort())
 	if err != nil {
-		slog.Error(err.Error())
+		log.Println(err.Error())
 		return err
 	}
 
@@ -41,10 +41,10 @@ func (a Adapter) Run() error {
 		reflection.Register(server)
 	}
 
-	slog.Info("starting service at ", config.AppPort())
+	log.Println("starting service at ", config.AppPort())
 
 	if err := server.Serve(listener); err != nil {
-		slog.Error(err.Error())
+		log.Println(err.Error())
 		return err
 	}
 

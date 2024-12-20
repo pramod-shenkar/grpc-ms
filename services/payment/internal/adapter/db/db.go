@@ -3,7 +3,7 @@ package db
 import (
 	"grpc-ms/services/payment/internal/application/core/domain"
 	"grpc-ms/services/payment/internal/ports"
-	"log/slog"
+	"log"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -18,13 +18,13 @@ var _ ports.DBPort = new(Adapter)
 func NewAdapter(dataSourceUrl string) (*Adapter, error) {
 	db, err := gorm.Open(mysql.Open(dataSourceUrl), &gorm.Config{})
 	if err != nil {
-		slog.Error(err.Error())
+		log.Println(err.Error())
 		return nil, err
 	}
 
 	err = db.AutoMigrate(&Payment{})
 	if err != nil {
-		slog.Error(err.Error())
+		log.Println(err.Error())
 		return nil, err
 	}
 

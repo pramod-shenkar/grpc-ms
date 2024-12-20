@@ -1,52 +1,31 @@
 package config
 
 import (
-	"fmt"
-	"os"
+	conf "github.com/caarlos0/env"
 )
 
-func GetAppPort() string {
-	appPort := os.Getenv("AppPort")
-	if appPort == "" {
-		return fmt.Sprintf(":%v", 3000)
-	}
-	return appPort
+type env struct {
+	AppPort           string `env:"AppPort" envDefault:"3000"`
+	DataSourceUrl     string `env:"DataSourceUrl" envDefault:"root:password@tcp(localhost:3306)/"`
+	ServiceName       string `env:"ServiceName" envDefault:"common"`
+	Mode              mode   `env:"Mode" envDefault:"dev"`
+	PaymentServiceUrl string `env:"PaymentServiceUrl" envDefault:"localhost:3001"`
 }
 
-func GetDataSourceUrl() string {
-	dataSourceUrl := os.Getenv("DaraSourceUrl")
-	if dataSourceUrl == "" {
-		return "user:password@tcp(172.21.0.2:3306)/order"
-	}
-	return dataSourceUrl
+var Env = New()
+
+func New() env {
+
+	var envVars env
+	conf.Parse(&envVars)
+
+	return envVars
 }
 
-type env string
+type mode string
 
 const (
-	Dev  env = "dev"
-	Test env = "stage"
-	Prod env = "prod"
+	Dev  mode = "dev"
+	Test mode = "stage"
+	Prod mode = "prod"
 )
-
-func GetEnv() env {
-	envStr := os.Getenv("Env")
-	if envStr == "" {
-		return Dev
-	}
-
-	return env(envStr)
-}
-
-func GetPaymentServiceUrl() string {
-	envStr := os.Getenv("PaymentServiceUrl")
-	if envStr == "" {
-		return "localhost:3001"
-	}
-
-	return envStr
-}
-
-func IsDevEnv() bool {
-	return GetEnv() == Dev
-}

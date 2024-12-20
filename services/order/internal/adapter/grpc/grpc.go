@@ -6,7 +6,7 @@ import (
 	"grpc-ms/services/order/config"
 	"grpc-ms/services/order/internal/application/core/domain"
 	"grpc-ms/services/order/internal/ports"
-	"log/slog"
+	"log"
 	"net"
 
 	"google.golang.org/grpc"
@@ -28,23 +28,23 @@ func NewAdapter(api ports.APIPort) *Adapter {
 
 func (a Adapter) Run() error {
 
-	listener, err := net.Listen("tcp", config.GetAppPort())
+	listener, err := net.Listen("tcp", config.Env.AppPort)
 	if err != nil {
-		slog.Error(err.Error())
+		log.Println(err.Error())
 		return err
 	}
 
 	server := grpc.NewServer()
 
 	order.RegisterOrderServer(server, a)
-	if config.IsDevEnv() {
+	if config.Env.Mode == config.Dev {
 		reflection.Register(server)
 	}
 
-	slog.Info("starting service at ", config.GetAppPort())
+	log.Println("starting service at ", config.Env.AppPort)
 
 	if err := server.Serve(listener); err != nil {
-		slog.Error(err.Error())
+		log.Println(err.Error())
 		return err
 	}
 

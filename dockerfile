@@ -1,14 +1,15 @@
-FROM golang:alpine as builder
+FROM golang:latest as builder
 ARG servicename
 
 WORKDIR /usr/src/app
 COPY . .
 # RUN go mod tidy
 
-RUN go build -o main ./services/${servicename}/cmd/main.go
+RUN ls
+RUN go build -o main ./services/order/cmd/main.go
 
-# FROM sratch
-# COPY --from=builder /usr/src/app/order ./order
+# FROM scratch
+# COPY --from=builder /usr/src/app/main ./main
 CMD ["./main"]
 
 # CMD ["sleep", "5000000"]
